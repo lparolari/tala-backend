@@ -147,6 +147,8 @@ def get_anomalies(ref_df, get_data):
             "outliers": outliers_processed
         }
 
+    return {}
+
 
 def get_anomalies_list(dfs, get_data):
     return [get_anomalies(df, get_data) for df in dfs]

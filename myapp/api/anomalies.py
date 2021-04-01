@@ -1,12 +1,13 @@
 from flask import Blueprint, Response
-from flask import jsonify, request, redirect, url_for, current_app
+from flask import jsonify, make_response, request, current_app
 from werkzeug.datastructures import Headers
 from werkzeug.utils import secure_filename
-from ..analyzer.analyze import get_anomalies_list, get_left, read_meeting_from_csv
+from ..analyzer.analyze import get_anomalies_list, get_left, get_joined, read_meeting_from_csv
 import os
+import ntpath
 
 
-bp = Blueprint('anomalies', __name__, url_prefix='/anomalies')
+bp = Blueprint('anomalies', __name__)
 
 
 ALLOWED_EXTENSIONS = {'csv'}
@@ -31,7 +32,7 @@ def save_files(files, filenames):
         f.save(fn)
 
 
-@bp.route('/left', methods=['POST'])
+@bp.route('/anomalies', methods=['POST'])
 def anomalies_left():
     upload_folder = current_app.config['UPLOAD_FOLDER']
 
@@ -47,10 +48,28 @@ def anomalies_left():
     # save files
     save_files(files, filenames)
 
-    return {"anomalies": get_anomalies_list([read_meeting_from_csv(filename) for filename in filenames], get_left)}
+    # get analysis type
+    analysis_type = request.args.get('analysis_type')
+    if analysis_type not in ["Left", "Joined"]:
+        analysis_type = "Left"
+
+    # set the analysis function
+    analysis_f = get_left if analysis_type == "Left" else get_joined
+
+    # load dfs
+    dfs = [read_meeting_from_csv(filename) for filename in filenames]
+
+    # collect anomalies
+    anomalies = zip(get_anomalies_list(dfs, analysis_f), filenames)
+    anomalies = filter(lambda a: not (a[0] == {}), anomalies)
+    anomalies = map(
+        lambda a: {**a[0], "filename": ntpath.basename(a[1])}, anomalies)
+    anomalies = list(anomalies)
+
+    return make_response(jsonify(anomalies))
 
 
-@ bp.after_request
+@bp.after_request
 def after_request(response):
     headers = response.headers
     headers['Access-Control-Allow-Origin'] = '*'
