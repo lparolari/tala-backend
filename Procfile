@@ -1,1 +1,1 @@
-web: gunicorn csgi:tala
+web: gunicorn csgi:app
