@@ -7,7 +7,8 @@ def load_config(app, test_config):
     if test_config:
         app.config.from_mapping(test_config)
     else:
-        app.config.from_pyfile('config.py', silent=False)
+        app.config['UPLOAD_FOLDER'] = os.environ['UPLOAD_FOLDER']
+        app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 
 
 def ensure_instance_folder(app):
