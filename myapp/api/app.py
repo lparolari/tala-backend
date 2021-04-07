@@ -2,27 +2,18 @@ from flask import Flask
 from flask_cors import CORS
 import os
 
-
-def load_config(app, test_config):
-    if test_config:
-        app.config.from_mapping(test_config)
-    else:
-        app.config['UPLOAD_FOLDER'] = os.environ['UPLOAD_FOLDER']
-        app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
+from .anomalies import bp as anomalies_bp
+from .hello import bp as hello_bp
 
 
-def ensure_instance_folder(app):
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
-
-
-def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True)
+def create_app():
+    app = Flask(__name__)
     CORS(app)
 
-    load_config(app, test_config)
-    ensure_instance_folder(app)
+    app.config['UPLOAD_FOLDER'] = '/tmp'
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', None)
+
+    app.register_blueprint(anomalies_bp)
+    app.register_blueprint(hello_bp)
 
     return app
