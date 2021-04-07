@@ -1,1 +1,1 @@
-web: gunicorn csgi:app
+web: python wgsi.py
