@@ -6,7 +6,7 @@ bp = Blueprint('hello', __name__)
 
 @bp.route('/')
 def hello():
-    return make_response(jsonify("world"))
+    return make_response(jsonify({"hello": "world"}))
 
 
 @bp.after_request
