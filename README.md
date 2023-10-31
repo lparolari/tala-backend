@@ -42,6 +42,15 @@ python server.py
 
 You can now see the server up and running at [`http://localhost:5000/`](http://localhost:5000/).
 
+## Release
+
+Build an image and push it to Dockerhub.
+
+```
+docker build lparolari/tala:tala-backend-latest -f deploy/Dockerfile .
+docker push lparolari/tala:tala-backend-latest
+```
+
 ## API
 
 ### GET `/`
