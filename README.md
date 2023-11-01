@@ -1,6 +1,6 @@
 # Teams Attendance List Analyzer (TALA) API
 
-## [Try it out 🚀](https://tala-frontend.herokuapp.com/)
+## [Try it out 🚀](http://tala.lparolari.xyz/)
 
 Enjoy.
 
